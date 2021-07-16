@@ -9,7 +9,7 @@ import UIKit
 
 extension UIImageView {
     
-  
+    
     func downloaded(from url: URL, contentMode mode: ContentMode = .scaleAspectFit) {
         contentMode = mode
         URLSession.shared.dataTask(with: url) { data, response, error in
@@ -18,7 +18,7 @@ extension UIImageView {
                 let mimeType = response?.mimeType, mimeType.hasPrefix("image"),
                 let data = data, error == nil,
                 let image = UIImage(data: data)
-                else { return }
+            else { return }
             DispatchQueue.main.async() { [weak self] in
                 self?.image = image
             }
@@ -34,11 +34,8 @@ extension UIImageView {
     }
 }
 
-
-
-
 class ViewController: UIViewController {
-
+    
     @IBOutlet weak var charImage: UIImageView!
     @IBOutlet weak var nameLbl: UILabel!
     @IBOutlet weak var nickyLbl: UILabel!
@@ -48,6 +45,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var qouteLbl: UILabel!
     
     var qouta = [CharQoutes]()
+    
     var charQ: CharQoutes?
     var characters: Character?
     
@@ -72,77 +70,17 @@ class ViewController: UIViewController {
         
         charImage.downloaded(from: url!)
         
- 
         
-        getQoutes {
-            print("happy")
+        
+        qouteLbl.text = ""
+        
+        for i in 0 ..< qouta.count
+        {
+            qouteLbl.text?.append("\(qouta[i].quote) \n\n")
+            print(qouta[i].quote)
         }
-    }
-    
-    func getQoutes(completed: @escaping () -> ()) {
-        
-       let url = URL(string: "https://www.breakingbadapi.com/api/quotes")!
-        let urlSession = URLSession.shared
-        let urlRequest = URLRequest(url: url)
-
-        let task = urlSession.dataTask(with: urlRequest) { data, urlResponse, error in
-            if let error = error {
-                print("Error: \(error.localizedDescription)")
-                return
-            }
-            
-            guard let unwrappedData = data else {
-                print("No data")
-                return
-            }
-            
-            if let unwrappedString = String(data: unwrappedData, encoding: .utf8) {
-               print(unwrappedString)
-            }
-            
-            let jsonDecoder = JSONDecoder()
-            do {
-                guard let qou = try? jsonDecoder.decode([CharQoutes].self, from: unwrappedData)
-                else {
-                    print("Could not decode")
-                    return
-                }
-               // print(qou)
-            self.qouta.append(contentsOf: qou)
-            }
-            DispatchQueue.main.async {
-                completed()
-            }
-        }
-        task.resume()
-    }
-   
-    /*
-    func getQoutes(completed: @escaping () -> ()) {
-        
-        let url = URL(string: "https://www.breakingbadapi.com/api/quotes")
-        
-        URLSession.shared.dataTask(with: url!) { (data, resonse, error) in
-            if error == nil {
-                
-                let jsonDecoder = JSONDecoder()
-                do {
-                    self.qouta = try jsonDecoder.decode([CharQoutes].self, from: data!)
-                    DispatchQueue.main.async {
-                        completed()
-                    }
-                }
-                catch {
-                    print("Nada")
-                }
-                
-            }
-         
-        }
-        .resume()
-    }
- */
-
-
+    }  
 }
+
+
 
